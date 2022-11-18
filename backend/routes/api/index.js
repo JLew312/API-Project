@@ -1,10 +1,10 @@
 const router = require('express').Router();
+const { restoreUser } = require('../../utils/auth.js');
 
-// TEST ROUTER
-// router.post('/test', function(req, res) {
-//   // res.json({ requestBody: req.body });
-//   // res.send('hello')
-//   console.log('hello')
-// });
+
+router.use(restoreUser);
+
+
+
 
 module.exports = router;

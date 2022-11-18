@@ -14,7 +14,6 @@ const routes = require('./routes');
 
 const app = express();
 
-app.use(routes);
 
 app.use(morgan('dev'));
 
@@ -29,18 +28,20 @@ app.use(
   helmet.crossOriginResourcePolicy({
     policy: "cross-origin"
   })
-);
+  );
 
-app.use(
-  csurf({
-    cookie: {
-      secure: isProduction,
-      sameSite: isProduction && "Lax",
-      httpOnly: true
-    }
-  })
-);
-app.use(routes);
+  app.use(
+    csurf({
+      cookie: {
+        secure: isProduction,
+        sameSite: isProduction && "Lax",
+        httpOnly: true
+      }
+    })
+    );
+
+  app.use(routes);
+
 
 // ERROR HANDLING MIDDLEWARE
 // "Resource not found" Error-Handler
