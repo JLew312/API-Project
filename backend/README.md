@@ -3,7 +3,7 @@
 ## Database Schema Design
 
 <!-- ![Alt text](img/Screenshot%202022-11-21%20at%207.36.16%20PM.png) -->
-<img src="img/Screenshot%202022-11-21%20at%207.36.16%20PM.png" alt="DB Schema" width="700"/>
+<img src="img/Screenshot 2022-11-22 at 12.58.37 PM.png" alt="DB Schema" width="700"/>
 
 
 ## API Documentation
