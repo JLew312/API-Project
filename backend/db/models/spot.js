@@ -13,6 +13,10 @@ module.exports = (sequelize, DataTypes) => {
       Spots.belongsTo(
         models.Host,
         {foreignKey: 'spotId'}
+      ),
+      Spots.hasMany(
+        models.Review,
+        {foreignKey: 'spotId'}
       )
     }
   }
