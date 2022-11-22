@@ -14,7 +14,8 @@ module.exports = {
         allowNull: false,
         unique: true,
         references: {
-          model: 'Hosts'
+          model: 'Hosts',
+          key: 'id'
         }
       },
       address: {
