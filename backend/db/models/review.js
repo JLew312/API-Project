@@ -29,16 +29,16 @@ module.exports = (sequelize, DataTypes) => {
     userId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      // references: {
-      //   model: 'User'
-      // }
+      references: {
+        model: 'User'
+      }
     },
     spotId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      // references: {
-      //   model: 'Spot'
-      // }
+      references: {
+        model: 'Spots'
+      }
     },
     review: {
       type: DataTypes.STRING,

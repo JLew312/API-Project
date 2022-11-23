@@ -13,10 +13,10 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
         unique: true,
-        // references: {
-        //   model: 'Hosts',
-        //   key: 'id'
-        // }
+        references: {
+          model: 'Hosts',
+          key: 'id'
+        }
       },
       address: {
         type: Sequelize.STRING,
