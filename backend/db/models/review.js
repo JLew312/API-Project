@@ -18,6 +18,10 @@ module.exports = (sequelize, DataTypes) => {
       Review.belongsTo(
         models.Spots,
         {foreignKey: 'spotId'}
+      ),
+      Review.hasMany(
+        models.ReviewImage,
+        {foreignKey: 'reviewId'}
       )
     }
   }
