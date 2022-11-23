@@ -3,15 +3,6 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-    /**
-     * Add seed commands here.
-     *
-     * Example:
-     * await queryInterface.bulkInsert('People', [{
-     *   name: 'John Doe',
-     *   isBetaMember: false
-     * }], {});
-    */
 
     await queryInterface.bulkInsert('Spots',
     [
@@ -25,9 +16,7 @@ module.exports = {
         lng: 90.4590234,
         name: 'The Bay House',
         description: 'A bay house',
-        price: 45,
-        avgRating: 4,
-        previewImg: 'preview'
+        price: 45
       },
       {
         ownerId: 2,
@@ -39,9 +28,7 @@ module.exports = {
         lng: 21.6793456,
         name: 'Temp House',
         description: 'A temp house',
-        price: 635,
-        avgRating: 2,
-        previewImg: 'preview'
+        price: 635
       },
       {
         ownerId: 1,
@@ -53,20 +40,12 @@ module.exports = {
         lng: 120.3333333,
         name: 'Another temp house',
         description: 'A house',
-        price: 290,
-        avgRating: 4,
-        previewImg: 'preview'
+        price: 290
       },
     ])
   },
 
   async down (queryInterface, Sequelize) {
-    /**
-     * Add commands to revert seed here.
-     *
-     * Example:
-     * await queryInterface.bulkDelete('People', null, {});
-     */
 
     await queryInterface.bulkDelete('Spots', {
       name: ['The Bay House', 'A temp house', 'Another temp house']

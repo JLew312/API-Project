@@ -22,10 +22,6 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false
       },
-      phoneNum: {
-        type: Sequelize.INTEGER,
-        allowNull: false
-      },
       email: {
         type: Sequelize.STRING(256),
         allowNull: false,
@@ -35,10 +31,6 @@ module.exports = {
         type: Sequelize.STRING(30),
         allowNull: false,
         unique: true
-      },
-      avgRating: {
-        type: Sequelize.NUMERIC(3,2),
-        allowNull: false
       },
       hashedPassword: {
         type: Sequelize.STRING.BINARY,

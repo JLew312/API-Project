@@ -13,16 +13,11 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'Review',
-          key: 'id'
+          model: 'Reviews'
         }
       },
       url: {
         type: Sequelize.STRING,
-        allowNull: false
-      },
-      preview: {
-        type: Sequelize.BOOLEAN,
         allowNull: false
       },
       createdAt: {

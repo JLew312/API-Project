@@ -11,23 +11,19 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // Spots.belongsTo(
-      //   models.Host,
+      //   models.User,
       //   {foreignKey: 'spotId'}
       // ),
-      // Spots.hasMany(
-      //   models.Review,
-      //   {foreignKey: 'spotId'}
-      // )
+      Spots.hasMany(
+        models.Review,
+        {foreignKey: 'spotId'}
+      )
     }
   }
   Spots.init({
     ownerId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      references: {
-        model: 'Hosts',
-        key: 'id'
-      }
     },
     address: {
       type: DataTypes.STRING,
@@ -64,14 +60,6 @@ module.exports = (sequelize, DataTypes) => {
     },
     price: {
       type: DataTypes.INTEGER,
-      allowNull: false
-    },
-    avgRating: {
-      type: DataTypes.INTEGER,
-      allowNull: false
-    },
-    previewImg: {
-      type: DataTypes.STRING,
       allowNull: false
     }
   }, {

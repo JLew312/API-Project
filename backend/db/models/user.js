@@ -45,10 +45,10 @@ module.exports = (sequelize, DataTypes) => {
     }
 
     static associate(models) {
-      // User.hasMany(
-      //   models.Review,
-      //   {foreignKey: 'userId'}
-      // )
+      User.hasMany(
+        models.Review,
+        {foreignKey: 'userId'}
+      )
     }
   };
 
@@ -60,10 +60,6 @@ module.exports = (sequelize, DataTypes) => {
       },
       lastName: {
         type: DataTypes.STRING,
-        allowNull: false
-      },
-      phoneNum: {
-        type: DataTypes.INTEGER,
         allowNull: false
       },
       email: {
@@ -85,10 +81,6 @@ module.exports = (sequelize, DataTypes) => {
             }
           }
         }
-      },
-      avgRating: {
-        type: DataTypes.NUMERIC(3,2),
-        allowNull: false
       },
       hashedPassword: {
         type: DataTypes.STRING.BINARY,

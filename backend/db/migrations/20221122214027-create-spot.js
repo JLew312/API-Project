@@ -14,8 +14,7 @@ module.exports = {
         allowNull: false,
         unique: true,
         references: {
-          model: 'Hosts',
-          key: 'id'
+          model: 'Users'
         }
       },
       address: {
@@ -52,14 +51,6 @@ module.exports = {
       },
       price: {
         type: Sequelize.INTEGER,
-        allowNull: false
-      },
-      avgRating: {
-        type: Sequelize.INTEGER,
-        allowNull: false
-      },
-      previewImg: {
-        type: Sequelize.STRING,
         allowNull: false
       },
       createdAt: {

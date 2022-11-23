@@ -13,22 +13,19 @@ module.exports = {
      * }], {});
     */
 
-    await queryInterface.bulkDelete('ReviewsImages',
+    await queryInterface.bulkInsert('ReviewsImages',
     [
       {
         reviewId: 3,
-        url: "image url",
-        preview: true
+        url: "image url"
       },
       {
         reviewId: 1,
-        url: "image url",
-        preview: false
+        url: "image url"
       },
       {
         reviewId: 2,
-        url: "image url",
-        preview: true
+        url: "image url"
       },
     ])
   },
