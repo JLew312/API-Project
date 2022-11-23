@@ -13,24 +13,30 @@ module.exports = {
       {
         firstName: 'ben',
         lastName: 'mason',
+        phoneNum: 5289610059,
         email: 'demo@user.io',
         username: 'Demo-lition',
+        avgRating: 4.0,
         hashedPassword: bcrypt.hashSync('password')
       },
       {
         firstName: 'hal',
         lastName: 'mason',
+        phoneNum: 2534856713,
         email: 'user1@user.io',
         username: 'FakeUser1',
+        avgRating: 2.7,
         hashedPassword: bcrypt.hashSync('password2')
       },
       {
         firstName: 'matt',
         lastName: 'mason',
+        phoneNum: 2056783456,
         email: 'user2@user.io',
         username: 'FakeUser2',
+        avgRating: 3.5,
         hashedPassword: bcrypt.hashSync('password3')
-      }
+      },
     ], {});
   },
 

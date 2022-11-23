@@ -10,10 +10,10 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Host.hasMany(
-        models.Spots,
-        {foreignKey: 'spotId', onDelete: 'CASCADE'}
-      )
+      // Host.hasMany(
+      //   models.Spots,
+      //   {foreignKey: 'spotId', onDelete: 'CASCADE'}
+      // )
     }
   }
   Host.init({
@@ -34,16 +34,16 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
     rating: {
-      type: DataTypes.NUMERIC(3,2),
+      type: DataTypes.DECIMAL(3,2),
       allowNull: false
     },
     spotId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      references: {
-        model: 'Spots',
-        key: 'id'
-      }
+      // references: {
+      //   model: 'Spots',
+      //   key: 'id'
+      // }
     }
   }, {
     sequelize,
