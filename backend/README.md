@@ -1,5 +1,6 @@
 # AirBnB Clone
 
+## Database Schema Design
 
 ![airbnb-dbdiagram]
 
