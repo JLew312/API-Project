@@ -28,3 +28,5 @@
 
 //   res.json(bookings)
 // })
+
+console.log('hello world')
