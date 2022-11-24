@@ -58,7 +58,7 @@ router.get('/', async (req, res) => {
     delete spot.Reviews;
   })
 
-  res.json(spotsList)
+  res.json(spots)
 })
 
 module.exports = router;
