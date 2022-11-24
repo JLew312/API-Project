@@ -12,11 +12,19 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       Booking.belongsTo(
         models.Spots,
-        {foreignKey: 'spotsId'}
+        {foreignKey: 'spotId'}
       ),
       Booking.belongsTo(
         models.User,
         {foreignKey: 'userId'}
+      ),
+      Booking.hasMany(
+        models.SpotImage,
+        {foreignKey: 'spotId'}
+      ),
+      Booking.hasMany(
+        models.Review,
+        {foreignKey: 'spotId'}
       )
     }
   }
@@ -40,7 +48,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {
     sequelize,
-    modelName: 'Booking',
+    modelName: 'Booking'
   });
   return Booking;
 };

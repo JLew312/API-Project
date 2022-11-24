@@ -65,6 +65,11 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'Spots',
+    // scopes: {
+    //   attributes: {
+    //     include: ['createdAt', 'updatedAt']
+    //   }
+    // }
   });
   return Spots;
 };
