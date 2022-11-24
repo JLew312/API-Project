@@ -16,9 +16,9 @@ module.exports = {
       spotId: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        references: {
-          model: 'Spots'
-        }
+        // references: {
+        //   model: 'Spots'
+        // }
       },
       review: {
         type: Sequelize.STRING,
