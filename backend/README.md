@@ -1,10 +1,44 @@
-# `AirBnb Clone Project`
 
-## Database Schema Design
+## API Documentation
 
-<!-- ![Alt text](img/Screenshot%202022-11-21%20at%207.36.16%20PM.png) -->
-<img src="img/Screenshot 2022-11-22 at 12.58.37 PM.png" alt="DB Schema" width="700"/>
+## USER AUTHENTICATION/AUTHORIZATION
 
+### All endpoints that require authentication
+
+All endpoints that require a current user to be logged in.
+
+* Request: endpoints that require authentication
+* Error Response: Require authentication
+  * Status Code: 401
+  * Headers:
+    * Content-Type: application/json
+  * Body:
+
+    ```json
+    {
+      "message": "Authentication required",
+      "statusCode": 401
+    }
+    ```
+
+### All endpoints that require proper authorization
+
+All endpoints that require authentication and the current user does not have the
+correct role(s) or permission(s).
+
+* Request: endpoints that require proper authorization
+* Error Response: Require proper authorization
+  * Status Code: 403
+  * Headers:
+    * Content-Type: application/json
+  * Body:
+
+    ```json
+    {
+      "message": "Forbidden",
+      "statusCode": 403
+    }
+    ```
 
 ## API Documentation
 
