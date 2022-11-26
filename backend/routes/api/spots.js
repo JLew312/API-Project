@@ -7,7 +7,7 @@ const { Booking,
         User } = require('../../db/models');
 const { requireAuth } = require('../../utils/auth');
 
-router.get('/', async (req, res) => {
+router.get('/', requireAuth, async (req, res) => {
   const spots = await Spots.findAll({
     include: [
       {
@@ -58,7 +58,7 @@ router.get('/', async (req, res) => {
     delete spot.Reviews;
   })
 
-  res.json(spots)
+  return res.json(spotsList)
 })
 
 module.exports = router;
