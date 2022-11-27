@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { Booking,
         Review,
-        Spots,
+        Spot,
         SpotImage,
         User } = require('../../db/models');
 const { requireAuth } = require('../../utils/auth');
@@ -12,7 +12,7 @@ router.get('/:current', requireAuth, async (req, res) => {
   const bookings = await Booking.findAll({
     include: [
       {
-        model: Spots,
+        model: Spot,
         attributes: {
           exclude: ['createdAt', 'updatedAt']
         }
