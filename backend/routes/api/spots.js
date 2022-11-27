@@ -5,7 +5,8 @@ const { Booking,
         Spot,
         SpotImage,
         User } = require('../../db/models');
-const { requireAuth } = require('../../utils/auth');
+const { requireAuth, restoreUser } = require('../../utils/auth');
+const { Op } = require('sequelize')
 
 router.get('/', requireAuth, async (req, res) => {
   const spots = await Spot.findAll({
@@ -64,20 +65,39 @@ router.get('/', requireAuth, async (req, res) => {
 router.post('/', requireAuth, async (req, res) => {
   const ownerId = req.user.id
   const { address, city, state, country, lat, lng, name, description, price } = req.body;
-  const newSpot = await Spot.create({
-    ownerId,
-    address,
-    city,
-    state,
-    country,
-    lat,
-    lng,
-    name,
-    description,
-    price
-  })
 
-  return res.json(newSpot)
+  if (!address || !city || !state || !country || !lat || !lng || !name || !description || !price) {
+    res.json({
+      message: "Validation Error",
+      statuscode: 400,
+      errors: {
+        address: "Street address is required",
+        city: "City is required",
+        state: "State is required",
+        country: "Country is required",
+        lat: "Latitude is not valid",
+        lng: "Longitude is not valid",
+        name: "Name must be less than 50 characters",
+        description: "Description is required",
+        price: "Price per day is required"
+      }
+    })
+  } else {
+    const newSpot = await Spot.create({
+      ownerId,
+      address,
+      city,
+      state,
+      country,
+      lat,
+      lng,
+      name,
+      description,
+      price
+    })
+
+    return res.json(newSpot)
+  }
 })
 
 router.get('/current', requireAuth, async (req, res) => {
@@ -144,8 +164,43 @@ router.get('/:spotId', async (req, res) => {
 
 router.put('/:spotId', requireAuth, async (req, res) => {
   const spot = await Spot.findOne({
-    where: {id: req.params.spotId}
+    where: {
+      [Op.and]: [
+        {id: req.params.spotId},
+        {ownerId: req.user.id}
+      ]
+    }
   })
+
+  const {
+    address,
+    city,
+    state,
+    country,
+    lat,
+    lng,
+    name,
+    description,
+    price
+  } = req.body;
+
+  if (!address || !city || !state || !country || !lat || !lng || !name || !description || !price) {
+    res.json({
+      message: "Validation Error",
+      statuscode: 400,
+      errors: {
+        address: "Street address is required",
+        city: "City is required",
+        state: "State is required",
+        country: "Country is required",
+        lat: "Latitude is not valid",
+        lng: "Longitude is not valid",
+        name: "Name must be less than 50 characters",
+        description: "Description is required",
+        price: "Price per day is required"
+      }
+    })
+  }
 
   if (spot) {
     spot.update(
@@ -182,29 +237,41 @@ router.delete('/:spotId', requireAuth, async (req, res) => {
 
 router.post('/:spotId/images', requireAuth, async (req, res) => {
   const { url, preview } = req.body;
-  const spot = await Spot.findAll({
-    where: {id: req.params.spotId}
+  const spot = await Spot.findOne({
+    where: {
+      [Op.and]: [
+        {id: req.params.spotId},
+        {ownerId: req.user.id}
+      ]
+    }
   })
 
-  const spotId = req.params.spotId
+  if (spot) {
+    const spotId = req.params.spotId
 
-  if (req.params.spotId) {
-    const newImg = await SpotImage.create({
-      spotId,
-      url,
-      preview
-    })
+    if (req.params.spotId) {
+      const newImg = await SpotImage.create({
+        spotId,
+        url,
+        preview
+      })
 
-    const img = await SpotImage.findAll({
-      where: {id: req.params.spotId},
-      attributes: {exclude: ['spotId', 'createdAt', 'updatedAt']}
-    })
+      const img = await SpotImage.findAll({
+        where: {id: req.params.spotId},
+        attributes: {exclude: ['spotId', 'createdAt', 'updatedAt']}
+      })
 
-    res.json(img)
+      res.json(img)
+    } else {
+      res.json({
+        message: "Spot couldn't be found",
+        statuscode: 404
+      })
+    }
   } else {
     res.json({
-      message: "Spot couldn't be found",
-      statuscode: 404
+      message: "you do not have permission to add image",
+      statuscode: 403
     })
   }
 })
@@ -215,25 +282,66 @@ router.post('/:spotId/reviews', requireAuth, async (req, res) => {
   const spotId = req.params.spotId;
   const userId = req.user.id
 
-  if (req.params.spotId) {
-    await Review.create({
-      userId,
-      spotId,
-      review,
-      stars
-    })
+  const userReview = await Review.findAll({
+    where: {
+      [Op.and]: [
+        {spotId: spotId},
+        {userId: userId}
+    ]}
+  })
 
-    const reviews = await Review.findOne ({
-      where: {spotId: req.params.spotId}
-    })
+  const spot = await Spot.findOne({
+    where: { id: spotId }
+  })
 
-    res.json(reviews)
-  } else {
+  if (!review || !stars) {
+    res.json({
+      message: "Validation error",
+      statuscode: 400,
+      errors: {
+        review: "Review text is required",
+        stars: "Stars must be an integer from 1 to 5",
+      }
+    })
+  }
+
+  if (spot) {
+    if (!userReview) {
+      await Review.create({
+        userId,
+        spotId,
+        review,
+        stars
+      })
+
+      const reviews = await Review.findOne ({
+        where: {spotId: req.params.spotId}
+      })
+
+      res.json(reviews)
+
+    } else {
+      res.json({
+        message: "User already has a review for this spot",
+        statuscode: 403
+      })
+    }
+  } else if (!spot) {
     res.json({
       message: "Spot couldn't be found",
       statuscode: 404
     })
   }
+  // if (!review || !stars) {
+  //   res.json({
+  //     message: "Validation error",
+  //     statuscode: 400,
+  //     errors: {
+  //       review: "Review text is required",
+  //       stars: "Stars must be an integer from 1 to 5",
+  //     }
+  //   })
+  // }
 })
 
 module.exports = router;
