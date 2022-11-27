@@ -61,4 +61,52 @@ router.get('/', requireAuth, async (req, res) => {
   return res.json(spotsList)
 })
 
+router.post('/', requireAuth, async (req, res) => {
+  const ownerId = req.user.id
+  const { address, city, state, country, lat, lng, name, description, price } = req.body;
+  const newSpot = await Spots.create({
+    ownerId,
+    address,
+    city,
+    state,
+    country,
+    lat,
+    lng,
+    name,
+    description,
+    price
+  })
+
+  return res.json(newSpot)
+})
+
+router.post('/:spotId/images', requireAuth, async (req, res) => {
+  const { url, preview } = req.body;
+  const spot = await Spots.findAll({
+    where: {id: req.params.spotId}
+  })
+
+  const spotId = req.params.spotId
+
+  if (spotId) {
+    const newImg = await SpotImage.create({
+      spotId,
+      url,
+      preview
+    })
+
+    const img = await SpotImage.findAll({
+      where: {id: req.params.spotId},
+      attributes: {exclude: ['spotId', 'createdAt', 'updatedAt']}
+    })
+
+    res.json(img)
+  } else {
+    res.json({
+      statuscode: 404,
+      message: "Spot couldn't be found"
+    })
+  }
+})
+
 module.exports = router;
