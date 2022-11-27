@@ -209,4 +209,31 @@ router.post('/:spotId/images', requireAuth, async (req, res) => {
   }
 })
 
+router.post('/:spotId/reviews', requireAuth, async (req, res) => {
+  const { review, stars } = req.body;
+
+  const spotId = req.params.spotId;
+  const userId = req.user.id
+
+  if (req.params.spotId) {
+    await Review.create({
+      userId,
+      spotId,
+      review,
+      stars
+    })
+
+    const reviews = await Review.findOne ({
+      where: {spotId: req.params.spotId}
+    })
+
+    res.json(reviews)
+  } else {
+    res.json({
+      message: "Spot couldn't be found",
+      statuscode: 404
+    })
+  }
+})
+
 module.exports = router;
