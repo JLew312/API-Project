@@ -80,6 +80,106 @@ router.post('/', requireAuth, async (req, res) => {
   return res.json(newSpot)
 })
 
+router.get('/current', requireAuth, async (req, res) => {
+  const userSpots = await User.findOne({
+    where: {id: req.user.id},
+    include: [
+      {
+        model: Spots
+      }
+    ],
+    attributes: {exclude: ['id', 'firstName', 'lastName', 'username']}
+  })
+
+  res.json(userSpots)
+})
+
+router.get('/:spotId', async (req, res) => {
+  const spot = await Spots.findOne({
+    where: {id: req.params.spotId},
+    include: [
+      {
+        model: Review
+      },
+      {
+        model: SpotImage,
+        attributes: {exclude: ['spotId', 'createdAt', 'updatedAt']}
+      }
+    ]
+  });
+
+  if (spot) {
+    let newSpot = spot.toJSON()
+    // console.log(newSpot)
+
+    const owner = await User.findOne({
+      where: {id: newSpot.ownerId},
+      attributes: {exclude: ['username']}
+    })
+
+    newSpot.Owner = owner
+
+    if (newSpot.Reviews.length >= 1) {
+      newSpot.numReviews = newSpot.Reviews.length
+
+      newSpot.Reviews.forEach(review => {
+        let starTotal = 0;
+        if (review.stars) starTotal += newSpot.Reviews.stars;
+        newSpot.avgRating = (starTotal / newSpot.Reviews.length).toFixed(2);
+      })
+    } else if (newSpot.Reviews.length === 0) {
+      newSpot.avgRating = 'No reviews have been made about this spot. Be the first?'
+      newSpot.numReviews = newSpot.Reviews.length
+    }
+
+    delete newSpot.Reviews
+    res.json(newSpot)
+  } else {
+    res.json({
+      message: "Spot couldn't be found",
+      statuscode: 404
+    })
+  }
+})
+
+router.put('/:spotId', requireAuth, async (req, res) => {
+  const spot = await Spots.findOne({
+    where: {id: req.params.spotId}
+  })
+
+  if (spot) {
+    spot.update(
+      req.body
+    )
+    res.json(spot)
+  } else {
+    res.json({
+      message: "Spot couldn't be found",
+      statuscode: 404
+    })
+  }
+})
+
+router.delete('/:spotId', requireAuth, async (req, res) => {
+  const spot = await Spots.findOne({
+    where: {id: req.params.spotId}
+  });
+
+  if (spot) {
+    await spot.destroy();
+
+    res.json({
+      message: "Successfully deleted",
+      statuscode: 200
+    })
+  } else {
+    res.json({
+      message: "Spot couldn't be found",
+      statuscode: 404
+    })
+  }
+})
+
 router.post('/:spotId/images', requireAuth, async (req, res) => {
   const { url, preview } = req.body;
   const spot = await Spots.findAll({
@@ -88,7 +188,7 @@ router.post('/:spotId/images', requireAuth, async (req, res) => {
 
   const spotId = req.params.spotId
 
-  if (spotId) {
+  if (req.params.spotId) {
     const newImg = await SpotImage.create({
       spotId,
       url,
@@ -103,8 +203,8 @@ router.post('/:spotId/images', requireAuth, async (req, res) => {
     res.json(img)
   } else {
     res.json({
-      statuscode: 404,
-      message: "Spot couldn't be found"
+      message: "Spot couldn't be found",
+      statuscode: 404
     })
   }
 })
