@@ -50,7 +50,7 @@ module.exports = (sequelize, DataTypes) => {
         {foreignKey: 'userId'}
       ),
       User.hasMany(
-        models.Spots,
+        models.Spot,
         {foreignKey: 'ownerId'}
       )
     }

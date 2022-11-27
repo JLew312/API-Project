@@ -2,13 +2,13 @@ const express = require('express');
 const router = express.Router();
 const { Booking,
         Review,
-        Spots,
+        Spot,
         SpotImage,
         User } = require('../../db/models');
 const { requireAuth } = require('../../utils/auth');
 
 router.get('/', requireAuth, async (req, res) => {
-  const spots = await Spots.findAll({
+  const spots = await Spot.findAll({
     include: [
       {
         model: Review
@@ -64,7 +64,7 @@ router.get('/', requireAuth, async (req, res) => {
 router.post('/', requireAuth, async (req, res) => {
   const ownerId = req.user.id
   const { address, city, state, country, lat, lng, name, description, price } = req.body;
-  const newSpot = await Spots.create({
+  const newSpot = await Spot.create({
     ownerId,
     address,
     city,
@@ -85,7 +85,7 @@ router.get('/current', requireAuth, async (req, res) => {
     where: {id: req.user.id},
     include: [
       {
-        model: Spots
+        model: Spot
       }
     ],
     attributes: {exclude: ['id', 'firstName', 'lastName', 'username']}
@@ -95,7 +95,7 @@ router.get('/current', requireAuth, async (req, res) => {
 })
 
 router.get('/:spotId', async (req, res) => {
-  const spot = await Spots.findOne({
+  const spot = await Spot.findOne({
     where: {id: req.params.spotId},
     include: [
       {
@@ -143,7 +143,7 @@ router.get('/:spotId', async (req, res) => {
 })
 
 router.put('/:spotId', requireAuth, async (req, res) => {
-  const spot = await Spots.findOne({
+  const spot = await Spot.findOne({
     where: {id: req.params.spotId}
   })
 
@@ -161,7 +161,7 @@ router.put('/:spotId', requireAuth, async (req, res) => {
 })
 
 router.delete('/:spotId', requireAuth, async (req, res) => {
-  const spot = await Spots.findOne({
+  const spot = await Spot.findOne({
     where: {id: req.params.spotId}
   });
 
@@ -182,7 +182,7 @@ router.delete('/:spotId', requireAuth, async (req, res) => {
 
 router.post('/:spotId/images', requireAuth, async (req, res) => {
   const { url, preview } = req.body;
-  const spot = await Spots.findAll({
+  const spot = await Spot.findAll({
     where: {id: req.params.spotId}
   })
 
