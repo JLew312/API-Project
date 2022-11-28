@@ -2,11 +2,13 @@ const express = require('express');
 const router = express.Router();
 const { Booking,
         Review,
+        ReviewsImage,
         Spot,
         SpotImage,
         User } = require('../../db/models');
 const { requireAuth, restoreUser } = require('../../utils/auth');
 const { Op } = require('sequelize');
+const reviewsimage = require('../../db/models/reviewsimage');
 // const booking = require('../../db/models/booking');
 
 router.get('/', requireAuth, async (req, res) => {
@@ -275,6 +277,28 @@ router.post('/:spotId/images', requireAuth, async (req, res) => {
       statuscode: 403
     })
   }
+})
+
+router.get('/:spotId/reviews', async (req, res) => {
+  const spotReviews = await Review.findAll({
+    where: {spotId: req.params.spotId},
+    include: [
+      {
+        model: User,
+        attributes: {exclude: ['email', 'username', 'hashedPassword', 'createdAt', 'updatedAt']}
+      },
+      {
+        model: ReviewsImage,
+        attributes: {exclude: ['spotId', 'reviewId', 'createdAt', 'updatedAt']}
+      }
+    ]
+  })
+
+  if (spotReviews.length > 0) res.json(spotReviews)
+  else res.json({
+    message: "Spot couldn't be found",
+    statuscode: 404
+  })
 })
 
 router.post('/:spotId/reviews', requireAuth, async (req, res) => {
