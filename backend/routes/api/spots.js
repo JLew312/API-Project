@@ -249,34 +249,28 @@ router.post('/:spotId/images', requireAuth, async (req, res) => {
     }
   })
 
+  const spotId = req.params.spotId
+
   if (spot) {
-    const spotId = req.params.spotId
+    const newImg = await SpotImage.create({
+      spotId,
+      url,
+      preview
+    })
 
-    if (req.params.spotId) {
-      const newImg = await SpotImage.create({
-        spotId,
-        url,
-        preview
-      })
+    const img = await SpotImage.findOne({
+      where: {id: req.params.spotId},
+      attributes: {exclude: ['spotId', 'createdAt', 'updatedAt']}
+    })
 
-      const img = await SpotImage.findOne({
-        where: {id: req.params.spotId},
-        attributes: {exclude: ['spotId', 'createdAt', 'updatedAt']}
-      })
-
-      res.json(img)
-    } else {
-      res.json({
-        message: "Spot couldn't be found",
-        statuscode: 404
-      })
-    }
+    res.json(img)
   } else {
     res.json({
-      message: "you do not have permission to add image",
-      statuscode: 403
+      message: "Spot couldn't be found",
+      statuscode: 404
     })
   }
+
 })
 
 router.get('/:spotId/reviews', async (req, res) => {
