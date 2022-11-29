@@ -12,26 +12,10 @@ const { Op, DatabaseError } = require('sequelize');
 // const booking = require('../../db/models/booking');
 
 router.get('/', requireAuth, async (req, res) => {
-  let { page, size, minLat, maxLat, minLng, maxLng, minPrice, maxPrice } = req.query;
-  let arr = [minLat, maxLat, minLng, maxLng, minPrice, maxPrice];
+  let { minLat, maxLat, minLng, maxLng, minPrice, maxPrice } = req.query;
 
-  if (!page) page = 1;
-  if (!size) size = 20;
-
-  let pagination = {}
-
-  if (parseInt(page) >= 1 && parseInt(size) >= 1) {
-    if (parseInt(page) > 10) {
-      page = 10;
-    }
-    if (parseInt(size) > 20) {
-      size = 20;
-    }
-    pagination.limit = size;
-    pagination.offset = size * (page - 1);
-  }
-
-  const spots = await Spot.findAll({
+  let query = {
+    where: {},
     include: [
       {
         model: Review
@@ -39,27 +23,56 @@ router.get('/', requireAuth, async (req, res) => {
       {
         model: SpotImage
       }
-    ], ...pagination
+    ]
+  };
+
+  const page = req.query.page === undefined ? 1 : parseInt(req.query.page);
+  const size = req.query.size === undefined ? 20 : parseInt(req.query.size);
+  if (page >= 1 && size >= 1) {
+    query.limit = size;
+    query.offset = size * (page - 1);
+  }
+  // else if (page === 0 && )
+
+  let arr = [page, size];
+
+  if (req.query.minLat) query.where.minLat = req.query.minLat;
+  if (req.query.maxLat) query.where.maxLat = req.query.maxLat;
+  if (req.query.minLng) query.where.minLng = req.query.minLng;
+  if (req.query.maxLng) query.where.maxLng = req.query.maxLng;
+  if (req.query.minPrice) query.where.minPrice = req.query.minPrice;
+  if (req.query.maxPrice) query.where.maxPrice = req.query.maxPrice;
+
+  arr.forEach(prop => {
+    if (!prop) {
+      res.status(400)
+      return res.json({
+        message: "Validation Error",
+        statuscode: 400,
+        errors: {
+          page: "Page must be greater than or equal to 1",
+          size: "Size must be greater than or equal to 1",
+          maxLat: "Maximum latitude is invalid",
+          minLat: "Minimum latitude is invalid",
+          minLng: "Maximum longitude is invalid",
+          maxLng: "Minimum longitude is invalid",
+          minPrice: "Maximum price must be greater than or equal to 0",
+          maxPrice: "Minimum price must be greater than or equal to 0"
+        }
+      })
+    }
   })
 
-  // arr.forEach(item => {
-  //   if (!item) {
-  //     res.status(400)
-  //     return res.json({
-  //       message: "Validation Error",
-  //       statuscode: 400,
-  //       errors: {
-  //         page: "Page must be greater than or equal to 1",
-  //         size: "Size must be greater than or equal to 1",
-  //         maxLat: "Maximum latitude is invalid",
-  //         minLat: "Minimum latitude is invalid",
-  //         minLng: "Maximum longitude is invalid",
-  //         maxLng: "Minimum longitude is invalid",
-  //         minprice: "Maximum price must be greater than or equal to 0",
-  //         maxPrice: "Minimum price must be greater than or equal to 0"
-  //       }
-  //     })
-  //   }
+  const spots = await Spot.findAll(query)
+    // include: [
+    //   {
+    //     model: Review
+    //   },
+    //   {
+    //     model: SpotImage
+    //   }
+    // ],
+    // query
   // })
 
   let spotsList = [];
@@ -101,7 +114,13 @@ router.get('/', requireAuth, async (req, res) => {
     delete spot.Reviews;
   })
 
-  return res.json(spotsList)
+  let offset;
+  query.offset > 0 ? offset = query.offset : offset = 1;
+
+  return res.json({
+    Spots: spotsList,
+    page: offset,
+    size: query.limit})
 })
 
 router.post('/', requireAuth, async (req, res) => {
