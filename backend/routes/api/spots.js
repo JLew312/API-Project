@@ -8,7 +8,7 @@ const { Booking,
         User } = require('../../db/models');
 const { requireAuth, restoreUser } = require('../../utils/auth');
 const { Op } = require('sequelize');
-const reviewsimage = require('../../db/models/reviewsimage');
+// const reviewsimage = require('../../db/models/reviewsimage');
 // const booking = require('../../db/models/booking');
 
 router.get('/', requireAuth, async (req, res) => {
@@ -381,14 +381,24 @@ router.post('/:spotId/bookings', requireAuth, async (req, res) => {
     where: {spotId: req.params.spotId}
   })
 
-  let bookingList = []
   bookings.forEach(booking => {
     const bookingStart = new Date(booking.startDate)
     const bookingEnd = new Date(booking.endDate)
-    console.log(bookingStart.getTime())
 
-    if ((bookingStart.getTime() >= realStartDate.getTime() && bookingEnd.getTime() <= realEndDate.getTime()) ||
-        (bookingStart.getTime() >= realStartDate.getTime() || bookingEnd.getTime() <= realEndDate.getTime())) {
+    // realStartdate.getTime() >= bookingStart.getTime() && realStartDate.getTime() <= bookingEnd.getTime()
+    if (realStartDate.getTime() >= bookingStart.getTime() && realStartDate.getTime() <= bookingEnd.getTime()) {
+      return res.json({
+        message: "Sorry, this spot is already booked for the specified dates",
+        statuscode: 403,
+        errors: {
+          startDate: "Start date conflicts with an existing booking",
+          endDate: "End date conflicts with an existing booking"
+        }
+      })
+      // realEndDate.getTime() >= bookingStart.getTime() && realEndDate.getTime() <= bookingEnd.getTime()
+    }
+
+    if (realEndDate.getTime() >= bookingStart.getTime() && realEndDate.getTime() <= bookingEnd.getTime()) {
       return res.json({
         message: "Sorry, this spot is already booked for the specified dates",
         statuscode: 403,
@@ -398,6 +408,18 @@ router.post('/:spotId/bookings', requireAuth, async (req, res) => {
         }
       })
     }
+
+    if (realStartDate.getTime() <= bookingStart.getTime() && realEndDate.getTime() >= bookingEnd.getTime()) {
+      return res.json({
+        message: "Sorry, this spot is already booked for the specified dates",
+        statuscode: 403,
+        errors: {
+          startDate: "Start date conflicts with an existing booking",
+          endDate: "End date conflicts with an existing booking"
+        }
+      })
+    }
+
   })
 
   await Booking.create({
@@ -417,7 +439,7 @@ router.post('/:spotId/bookings', requireAuth, async (req, res) => {
     attributes: {include: ['createdAt', 'updatedAt']}
   })
 
-  res.json(bookedSpot)
+  return res.json(bookedSpot)
 })
 
 router.get('/:spotId/bookings', requireAuth, async (req, res) => {
@@ -468,7 +490,7 @@ router.get('/:spotId/bookings', requireAuth, async (req, res) => {
   } else {
     res.json({
       message: "Spot couldn't be found",
-      message: 404
+      statuscode: 404
     })
   }
 
