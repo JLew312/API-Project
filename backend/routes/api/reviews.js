@@ -48,6 +48,7 @@ router.put('/:reviewId', requireAuth, async (req, res) => {
   } = req.body;
 
   if (!review || !stars) {
+    res.status(400)
     res.json({
       message: "Validation Error",
       statuscode: 400,
@@ -64,6 +65,7 @@ router.put('/:reviewId', requireAuth, async (req, res) => {
     )
     res.json(editReview)
   } else {
+    res.status(404)
     res.json({
       message: "Spot couldn't be found",
       statuscode: 404
@@ -84,11 +86,13 @@ router.delete('/:reviewId', requireAuth, async (req, res) => {
   if (review) {
     await review.destroy();
 
+    res.status(200)
     res.json({
       message: "Successfully deleted",
       statuscode: 200
     })
   } else {
+    res.status(404)
     res.json({
       message: "Review couldn't be found",
       statuscode: 404
@@ -116,6 +120,7 @@ router.post('/:reviewId/images', requireAuth, async (req, res) => {
     const reviewObj = review.toJSON();
 
     if (reviewObj.ReviewsImages.length >= 10) {
+      res.status(400)
       res.json({
         message: "Maximum number of images for this resource was reached",
         statuscode: 400
@@ -134,6 +139,7 @@ router.post('/:reviewId/images', requireAuth, async (req, res) => {
 
     res.json(newImg)
   } else if (!review) {
+    res.status(404)
     res.json({
       message: "Review couldn't be found",
       statuscode: 404
