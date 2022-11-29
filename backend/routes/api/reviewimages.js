@@ -2,30 +2,38 @@ const express = require('express');
 const router = express.Router();
 const { Booking,
         Review,
+        ReviewsImage,
         Spot,
         SpotImage,
         User } = require('../../db/models');
 const { requireAuth, restoreUser } = require('../../utils/auth');
-const { Op } = require('sequelize')
+const { Op } = require('sequelize');
 
 router.delete('/:imageId', requireAuth, async (req, res) => {
-  const image = await SpotImage.findOne({
-    where: {id: req.params.imageId}
+  const image = await ReviewsImage.findOne({
+    where: {id: req.params.imageId},
+    include: [
+      {
+        model: Review,
+        where: {userId: req.user.id}
+      }
+    ]
   })
 
   if (image) {
     await image.destroy()
 
-    res.json({
+    return res.json({
       message: "Successfully deleted",
       statuscode: 200
     })
   } else {
     res.json({
-      message: "Spot Image couldn't be found",
+      message: "Review Image couldn't be found",
       statuscode: 404
     })
   }
 })
+
 
 module.exports = router;
