@@ -69,6 +69,7 @@ router.put('/:bookingId', requireAuth, async (req, res) => {
   console.log(currBooking)
 
   if (!currBooking) {
+    res.status(404)
     return res.json({
       message: "Booking couldn't be found",
       statuscode: 404
@@ -76,6 +77,7 @@ router.put('/:bookingId', requireAuth, async (req, res) => {
   };
 
   if (currBooking.userId !== userId) {
+    res.status(403)
     res.json({
       message: "You don't have permission to complete this action",
       statuscode: 403
@@ -94,6 +96,7 @@ router.put('/:bookingId', requireAuth, async (req, res) => {
     const bookingEnd = new Date(booking.endDate) // previous end dates
 
     if (editStart.getTime() >= bookingStart.getTime() && editStart.getTime() <= bookingEnd.getTime()) {
+      res.status(403)
       return res.json({
         message: "Sorry, this spot is already booked for the specified dates",
         statuscode: 403,
@@ -105,6 +108,7 @@ router.put('/:bookingId', requireAuth, async (req, res) => {
     }
 
     if (editEnd.getTime() >= bookingStart.getTime() && editEnd.getTime() <= bookingEnd.getTime()) {
+      res.status(403)
       return res.json({
         message: "Sorry, this spot is already booked for the specified dates",
         statuscode: 403,
@@ -116,6 +120,7 @@ router.put('/:bookingId', requireAuth, async (req, res) => {
     }
 
     if (editStart.getTime() <= bookingStart.getTime() && editEnd.getTime() >= bookingEnd.getTime()) {
+      res.status(403)
       return res.json({
         message: "Sorry, this spot is already booked for the specified dates",
         statuscode: 403,
@@ -128,11 +133,13 @@ router.put('/:bookingId', requireAuth, async (req, res) => {
   })
 
   if (currBookingEnd.getTime() < today.getTime()) {
+    res.status(403)
     return res.json({
       message: "Past bookings can't be modified",
       statuscode: 403
     })
   } else if (currBookingEnd.getTime() < currBookingStart.getTime()) {
+    res.status(403)
     return res.json({
       message: "Validation error",
       statuscode: 403,
@@ -160,6 +167,14 @@ router.delete('/:bookingId', requireAuth, async (req, res) => {
     }
   });
 
+  if (!booking) {
+    res.status(404)
+    res.json({
+      message: "Booking couldn't be found",
+      statuscode: 404
+    })
+  }
+
   const bookingEnd = new Date(booking.endDate);
   const today = new Date();
 
@@ -172,18 +187,21 @@ router.delete('/:bookingId', requireAuth, async (req, res) => {
     } else {
       await booking.destroy();
 
+      res.status(200)
       res.json({
         message: "Successfully deleted",
         statuscode: 200
       })
     }
   } else {
+    res.status(404)
     res.json({
       message: "Booking couldn't be found",
       statuscode: 404
     })
   }
-})
+
+  })
 
 
 module.exports = router;

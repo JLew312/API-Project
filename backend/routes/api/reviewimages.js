@@ -23,11 +23,13 @@ router.delete('/:imageId', requireAuth, async (req, res) => {
   if (image) {
     await image.destroy()
 
+    res.status(200)
     return res.json({
       message: "Successfully deleted",
       statuscode: 200
     })
   } else {
+    res.status(404)
     res.json({
       message: "Review Image couldn't be found",
       statuscode: 404
